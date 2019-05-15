@@ -71,7 +71,7 @@ while [ "$name" = "" ]; do
         fi
 done
 
-cmd="openssl ca -in $PRIVATE_DIR/$name.csr -out $CERTS_DIR/$name.crt"
+cmd="openssl ca -in $PRIVATE_DIR/$name.csr -out $CERTS_DIR/$name.crt -days 365"
 echo -e "${BLUE}[INFO]:${NC} Command: '$cmd'"
 
 echo -ne "${BLUE}[INFO]:${NC} Sign '$name' CertRequest? "
