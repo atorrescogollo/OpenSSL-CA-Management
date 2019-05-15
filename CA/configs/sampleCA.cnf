@@ -1,0 +1,56 @@
+[ ca ]
+default_ca	= CA		# The default ca section
+
+[ CA ]
+
+dir		= ./CA			# Where everything is kept
+certificate	= $dir/cacert.pem 	# The CA certificate
+database	= $dir/index.txt	# database index file.
+new_certs_dir	= $dir/signedcerts	# default place for new certs.
+private_key	= $dir/private/cakey.pem# The private key
+serial		= $dir/serial 		# The current serial number
+
+
+default_crl_days= 365			# how long before next CRL
+default_days	= 3650			# how long to certify for
+#default_md	= sha1			# use public key default MD
+default_md	= sha512		# use public key default MD
+
+policy		= ca_policy
+x509_extensions	= ca_extensions
+copy_extensions = copy
+
+[ ca_policy ]
+commonName		= supplied
+stateOrProvinceName	= supplied
+countryName		= supplied
+emailAddress		= supplied
+organizationName	= supplied
+organizationalUnitName	= supplied
+
+[ ca_extensions ]
+basicConstraints	= CA:false
+
+
+##################### Requests #####################
+[ req ]
+default_bits		= 2048
+default_keyfile 	= ./CA/private/cakey.pem
+#default_md		= sha1
+default_md		= sha512
+
+prompt			= no
+distinguished_name	= root_ca_distinguished_name
+x509_extensions		= root_ca_extensions
+
+[ root_ca_distinguished_name ]
+commonName			= CA Root Certificate Authority
+countryName			= ES
+stateOrProvinceName		= Madrid
+emailAddress			= root@example.org
+0.organizationName		= Organization Name
+organizationalUnitName		= SysAdmin Department
+
+[ root_ca_extensions ]
+basicConstraints		= CA:true
+
