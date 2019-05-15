@@ -1,0 +1,20 @@
+[ req ]
+prompt			= no
+distinguished_name	= server_distinguished_name
+req_extensions		= req_ext
+
+[ server_distinguished_name ]
+commonName		= server1.example.org
+countryName		= ES
+stateOrProvinceName	= Madrid
+emailAddress		= server@example.org
+organizationName	= Organization Name
+organizationalUnitName	= Sysadmin Department
+
+[ req_ext ]
+subjectAltName = @alt_names
+
+[ alt_names ]
+DNS.1	= server.example.org
+DNS.2	= myserver.example.org
+

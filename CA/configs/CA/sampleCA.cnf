@@ -4,9 +4,9 @@ default_ca	= CA		# The default ca section
 [ CA ]
 
 dir		= ./CA			# Where everything is kept
-certificate	= $dir/cacert.pem 	# The CA certificate
+certificate	= $dir/certs/cacert.crt 	# The CA certificate
 database	= $dir/index.txt	# database index file.
-new_certs_dir	= $dir/signedcerts	# default place for new certs.
+new_certs_dir	= $dir/signed_certs	# default place for new certs.
 private_key	= $dir/private/cakey.pem# The private key
 serial		= $dir/serial 		# The current serial number
 

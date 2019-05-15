@@ -2,7 +2,7 @@
 
 cd `dirname $0`
 WORKING_DIR="`pwd`/CA"
-CONF_DIR="$WORKING_DIR/configs/CA"
+CONF_DIR="$WORKING_DIR/configs/server"
 CERTS_DIR="$WORKING_DIR/certs"
 SIGNED_CERTS_DIR="$WORKING_DIR/signed_certs"
 PRIVATE_DIR="$WORKING_DIR/private"
@@ -64,18 +64,31 @@ CONF_FILE=${conffiles[$index]}
 echo -e "${BLUE}[INFO]:${NC} Selected $CONF_FILE."
 
 
-cmd="openssl req -x509 -newkey rsa:2048 -out $CERTS_DIR/cacert.crt -outform PEM -days 3560"
+while [ "$name" = "" ]; do
+	read -p "Write server name: " name
+	if [ -f "$PRIVATE_DIR/$name.pem" ]||[ -f "$SIGNED_CERTS_DIR/$name.crt" ]; then
+		echo -e "${RED}[ERROR]:${NC} Privkey or certificate for $name already exists."
+		name=""
+	fi
+done
+
+echo -ne "${BLUE}[INFO]:${NC} Encrypted privkey with passphrase? "
+read -rp "[Y/n] " ok
+if [[ "$ok" =~ ^(([yY])+|([\ ]*))$ ]]; then
+	cmd="openssl req -newkey rsa:2048 -keyout $PRIVATE_DIR/$name.pem -keyform PEM -out $PRIVATE_DIR/$name.csr -outform PEM"
+else
+	cmd="openssl req -newkey rsa:2048 -nodes -keyout $PRIVATE_DIR/$name.pem -keyform PEM -out $PRIVATE_DIR/$name.csr -outform PEM"
+fi
+
+
 echo -e "${BLUE}[INFO]:${NC} Command: '$cmd'"
 
-echo -ne "${BLUE}[INFO]:${NC} Generate private key and CA certificate? "
+echo -ne "${BLUE}[INFO]:${NC} Generate private key and CertRequest for '$name'? "
 read -rp "[Y/n] " ok
 if [[ "$ok" =~ ^(([yY])+|([\ ]*))$ ]]; then
 	echo -e "${BLUE}[INFO]:${NC} Setting openssl config file..."
 	export OPENSSL_CONF=$CONF_FILE
 	printenv OPENSSL_CONF
-	echo -e "${BLUE}[INFO]:${NC} Initializating $WORKING_DIR/serial and $WORKING_DIR/index.txt"
-	echo '01' > $WORKING_DIR/serial
-	cp /dev/null $WORKING_DIR/index.txt
 	`$cmd`	
 else
 	echo -e "${RED}[ERROR]:${NC} Operation aborted"

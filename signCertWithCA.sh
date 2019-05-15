@@ -63,19 +63,23 @@ fi
 CONF_FILE=${conffiles[$index]}
 echo -e "${BLUE}[INFO]:${NC} Selected $CONF_FILE."
 
+while [ "$name" = "" ]; do
+	read -p "Write server name: " name
+	if [ ! -f "$PRIVATE_DIR/$name.csr" ]; then
+                echo -e "${RED}[ERROR]:${NC} '$PRIVATE_DIR/$name.csr' was not found."
+                name=""
+        fi
+done
 
-cmd="openssl req -x509 -newkey rsa:2048 -out $CERTS_DIR/cacert.crt -outform PEM -days 3560"
+cmd="openssl ca -in $PRIVATE_DIR/$name.csr -out $CERTS_DIR/$name.crt"
 echo -e "${BLUE}[INFO]:${NC} Command: '$cmd'"
 
-echo -ne "${BLUE}[INFO]:${NC} Generate private key and CA certificate? "
+echo -ne "${BLUE}[INFO]:${NC} Sign '$name' CertRequest? "
 read -rp "[Y/n] " ok
 if [[ "$ok" =~ ^(([yY])+|([\ ]*))$ ]]; then
 	echo -e "${BLUE}[INFO]:${NC} Setting openssl config file..."
 	export OPENSSL_CONF=$CONF_FILE
 	printenv OPENSSL_CONF
-	echo -e "${BLUE}[INFO]:${NC} Initializating $WORKING_DIR/serial and $WORKING_DIR/index.txt"
-	echo '01' > $WORKING_DIR/serial
-	cp /dev/null $WORKING_DIR/index.txt
 	`$cmd`	
 else
 	echo -e "${RED}[ERROR]:${NC} Operation aborted"
